@@ -31,22 +31,21 @@ im = Image.open(sys.argv[1])
 pixelMap = im.load()
 
 
-# get the file name for saving
+# get the file name for saving later
 filePath = sys.argv[1]
 file = os.path.basename(filePath)
 
 newImg = Image.new(im.mode, im.size)
 newPixels = newImg.load()
 
+# iterate through each pixel
 for i in range(newImg.size[0]):
-    # print()
     for j in range(newImg.size[1]):
-        # print(pixelMap[i, j], end=" ")
         tempPix = 0
         k = i - delta
+        # apply filter
         while k <= i+delta:
             l = j - delta
-            # l = -2
             while l <= j+delta:
                 if k < 0 or k >= newImg.size[0] or l < 0 or l >= newImg.size[1]:
                     tempPix += 0
@@ -65,7 +64,7 @@ for i in range(newImg.size[0]):
         newPixels[i, j] = tempPix
 
 newImg.show()
-newImg.save("../outputImages/boxFilter{0}{1}".format(str(size), file), im.format)
+newImg.save("../outputImages/boxFilter{0}{1}".format(size, file), im.format)
 
 
 
