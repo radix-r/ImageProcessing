@@ -32,18 +32,66 @@ def main():
     # verify input valid
     if action[0] == "-":
         action = action[1:]
+
+
+
+
     # take action according to input
-    if action == "b" or action == "g" or action == "m":
-        # get the file name for saving later
-        filePath = sys.argv[2]
-        file = os.path.basename(filePath)
-        image = Image.open(filePath)
-        mode = image.mode
 
-        bands = image.split()
-        filteredBands = []
-        newImage = None
+    if action == "help":
+        printHelp()
+        exit(0)
 
+
+    filePath = sys.argv[2]
+    # get the file name for saving later
+    file = os.path.basename(filePath)
+    image = Image.open(filePath)
+    mode = image.mode
+
+    bands = image.split()
+    filteredBands = []
+    newImage = None
+
+    # check for ../outputImages directory
+    if not os.path.isdir("../outputImages"):
+        os.makedirs("../outputImages")
+
+    # actions that only need the image
+    if action == "gr":
+        print("Generating gradient on {0}".format(filePath))
+
+        ''' color stuff
+        for band in bands:
+
+            filteredBands.append(gradientForward(band))
+
+        # restore the alpha channel
+        if mode == "RGBA":
+            filteredBands[3] = bands[3]
+
+        newImage = Image.merge(mode, filteredBands)
+        '''
+        # convert image to grey scale
+        newImage = gradientForward(image.convert('L'))
+        print(type(mode))
+        # newImage.save("../outputImages/gaussianFilter{0}-{1}{2}".format(size, sigma, file), image.format)
+
+    elif action == "c":
+        print("Applying Canny edge detection on {0}".format(filePath))
+        # canny(image)
+
+    elif action == "h":
+        print("Generating histogram on {0}".format(filePath))
+        # histogram(image)
+        exit(0)
+
+    elif action == "s":
+        print("Applying Sobel edge detection on {0}".format(filePath))
+        # canny(image)
+
+    # actions that need image and size
+    else:
         # get size input and make sure it is valid
         try:
             size = int(sys.argv[3])
@@ -57,11 +105,6 @@ def main():
             print("For help: python3 pa1.py -help")
             exit(1)
 
-        # check for ../outputImages directory
-        if not os.path.isdir("../outputImages"):
-            os.makedirs("../outputImages")
-
-        # apply actions
         if action == "b":
             print("Applying box filter size {0} on {1}".format(size, filePath))
             for band in bands:
@@ -69,7 +112,7 @@ def main():
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/boxFilter{0}{1}".format(size, file), image.format)
 
-        elif action == "g":
+        elif action == "ga":
             # get sigma
             if numArgs == 5:
                 try:
@@ -88,25 +131,22 @@ def main():
                 filteredBands.append(gaussianFilter2D(band, size, sigma))
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/gaussianFilter{0}-{1}{2}".format(size, sigma, file), image.format)
+
         elif action == "m":
             print("Applying median filter size {0} on {1}".format(size, filePath))
             for band in bands:
                 filteredBands.append(medianFilter(band, size))
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/medianFilter{0}{1}".format(size, file), image.format)
+
+        else:
+            print("Unrecognized action: {0}".format(action))
+            print("For help: python3 pa1.py -help")
+            exit(1)
+
+    if newImage is not None:
         newImage.show()
 
-    elif action == "c":
-        print("Applying Cannny edge detection")
-
-    elif action == "h":
-        print("Generating histogram")
-    elif action == "help":
-        printHelp()
-        exit(0)
-    else:
-        print("Unrecognized command: {0}".format(action))
-        print("For help: python3 pa1.py -help")
 
 
 def boxFilter(image,size):
@@ -193,11 +233,47 @@ def gaussianFilter2D(image, size, sigma):
                             print("{0} | {1}".format(newImg.size[0], newImg.size[1]))
                             exit(1)
 
-
-
             newPixels[x, y] = int(tempPix/normalizer)
 
     return newImg
+
+
+'''
+Calculates forward gradient of a single band image using formula: G f(x)=f(x+1)-f(x)
+
+'''
+def gradientForward(image):
+    pixelMap = image.load()
+    gx = Image.new(image.mode, image.size)
+    gy = Image.new(image.mode, image.size)
+    gm = Image.new(image.mode, image.size)
+    newPixelsX = gx.load()
+    newPixelsY = gy.load()
+    newPixelsMag = gm.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    # iterate through each pixel
+    for x in range(width):
+        for y in range(height):
+            gradX = 0
+            gradY = 0
+            if x < width-1:
+                gradX = pixelMap[x+1,y]-pixelMap[x,y]
+
+            if y < height-1:
+                gradY = pixelMap[x,y+1]-pixelMap[x,y]
+
+            newPixelsX[x,y] = gradX
+            newPixelsY[x,y] = gradY
+            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
+
+    #gx.show()
+    #gy.show()
+    #gm.show()
+    return gm
+
 
 
 def medianFilter(image, size):
@@ -244,12 +320,14 @@ def printHelp():
     print("\t-b\t apply box filter. Size input needed.")
     print("\t-c\t apply Canny edge detection.")
 
-    print("\t-g\t apply Gaussian filter. Size input needed. Sigma input needed")
+    print("\t-ga\t apply Gaussian filter. Size input needed. Sigma input needed")
+    print("\t-gr\t get gradient.")
     print("\t-h\t generate a histogram of the image's color frequency.")
 
     print("\t-help\t print help.")
 
     print("\t-m\t apply median filter. Size input needed.")
+    print("\t-s\t apply 3x3 Sobel filter.")
 
 
 def sum2DMatrix(matrix):

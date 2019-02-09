@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b69a3019-41e3-4d53-b916-70065b5fdc4a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/boxFilter.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/medianFilter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputImages/output_canny1.png" beforeDir="false" afterPath="$PROJECT_DIR$/outputImages/example_output_canny1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputImages/output_canny2.png" beforeDir="false" afterPath="$PROJECT_DIR$/outputImages/example_output_canny2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pa1.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/pa1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,12 +18,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pa1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+            <state relative-caret-position="225">
+              <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
               <folding>
                 <element signature="e#332#353#0" expanded="true" />
+                <element signature="e#3695#4779#0" />
+                <element signature="e#4941#6400#0" />
                 <element signature="e#6438#7759#0" />
-                <element signature="e#7782#8481#0" />
               </folding>
             </state>
           </provider>
@@ -59,6 +60,14 @@
         <option value="Python Script" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>so</find>
+      <find>size</find>
+      <find>sob</find>
+      <find>grad</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -191,10 +200,10 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32916147" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.52888316" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32862645" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.5275995" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32991013" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -241,20 +250,6 @@
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/pa1.py</url>
-          <line>182</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/pa1.py</url>
-          <line>255</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="pixelMap" />
@@ -281,9 +276,6 @@
     <entry file="file://$PROJECT_DIR$/src/boxFilter.py" />
     <entry file="file://$PROJECT_DIR$/src/medianFilter.py" />
     <entry file="file://$PROJECT_DIR$/inputImages/image4.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inputImages/image3-1.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$USER_HOME$/.virtualenvs/roboV/lib/python3.5/codecs.py">
@@ -330,14 +322,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/inputImages/image3-1.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/pa1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+        <state relative-caret-position="225">
+          <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
           <folding>
             <element signature="e#332#353#0" expanded="true" />
+            <element signature="e#3695#4779#0" />
+            <element signature="e#4941#6400#0" />
             <element signature="e#6438#7759#0" />
-            <element signature="e#7782#8481#0" />
           </folding>
         </state>
       </provider>
