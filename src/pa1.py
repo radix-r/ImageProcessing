@@ -58,9 +58,27 @@ def main():
         os.makedirs("../outputImages")
 
     # actions that only need the image
-    if action == "gr":
-        print("Generating gradient on {0}".format(filePath))
+    if action.startswith("gr"):
 
+        version = action[-1:]
+
+        if version == "f":
+            print("Generating forward gradient on {0}".format(filePath))
+            # convert image to grey scale
+            newImage = gradientForward(image.convert('L'))
+
+        elif version == "b":
+            print("Generating backward gradient on {0}".format(filePath))
+            # convert image to grey scale
+            newImage = gradientBackward(image.convert('L'))
+
+        else: # default to central
+            version = "c"
+            print("Generating central gradient on {0}".format(filePath))
+            # convert image to grey scale
+            newImage = gradientCentral(image.convert('L'))
+
+        newImage.save("../outputImages/gradient-{0}-{1}".format(version, file), image.format)
         ''' color stuff
         for band in bands:
 
@@ -72,10 +90,8 @@ def main():
 
         newImage = Image.merge(mode, filteredBands)
         '''
-        # convert image to grey scale
-        newImage = gradientForward(image.convert('L'))
-        print(type(mode))
-        # newImage.save("../outputImages/gaussianFilter{0}-{1}{2}".format(size, sigma, file), image.format)
+
+
 
     elif action == "c":
         print("Applying Canny edge detection on {0}".format(filePath))
@@ -188,7 +204,7 @@ def gaussian(sigma, value):
 
 
 '''
-ToDo
+comments ToDo
 '''
 def gaussianFilter2D(image, size, sigma):
     # iterate through each pixel
@@ -262,15 +278,86 @@ def gradientForward(image):
             if x < width-1:
                 gradX = pixelMap[x+1,y]-pixelMap[x,y]
 
-            if y < height-1:
+            if y < height -1:
                 gradY = pixelMap[x,y+1]-pixelMap[x,y]
 
             newPixelsX[x,y] = gradX
             newPixelsY[x,y] = gradY
             newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
 
-    #gx.show()
-    #gy.show()
+    gx.show()
+    gy.show()
+    #gm.show()
+    return gm
+
+
+'''
+Generates backward gradient using equation: G f(x) = f(x)-f(x-1)
+'''
+def gradientBackward(image):
+    pixelMap = image.load()
+    gx = Image.new(image.mode, image.size)
+    gy = Image.new(image.mode, image.size)
+    gm = Image.new(image.mode, image.size)
+    newPixelsX = gx.load()
+    newPixelsY = gy.load()
+    newPixelsMag = gm.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    # iterate through each pixel
+    for x in (range(width)):
+        for y in range(height):
+            gradX = 0
+            gradY = 0
+            if x > 0:
+                gradX = pixelMap[x,y]-pixelMap[x-1,y]
+
+            if y > 0:
+                gradY = pixelMap[x,y]-pixelMap[x,y-1]
+
+            newPixelsX[x,y] = gradX
+            newPixelsY[x,y] = gradY
+            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
+
+    gx.show()
+    gy.show()
+    #gm.show()
+    return gm
+
+'''
+Generates central gradient using equation: G f(x) = f(x+1)-f(x-1)
+'''
+def gradientCentral(image):
+    pixelMap = image.load()
+    gx = Image.new(image.mode, image.size)
+    gy = Image.new(image.mode, image.size)
+    gm = Image.new(image.mode, image.size)
+    newPixelsX = gx.load()
+    newPixelsY = gy.load()
+    newPixelsMag = gm.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    # iterate through each pixel
+    for x in range(width):
+        for y in range(height):
+            gradX = 0
+            gradY = 0
+            if x > 0 and x < (width -1):
+                gradX = pixelMap[x+1,y]-pixelMap[x-1,y]
+
+            if y > 0 and y < height -1:
+                gradY = pixelMap[x,y+1]-pixelMap[x,y-1]
+
+            newPixelsX[x,y] = gradX
+            newPixelsY[x,y] = gradY
+            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
+
+    gx.show()
+    gy.show()
     #gm.show()
     return gm
 

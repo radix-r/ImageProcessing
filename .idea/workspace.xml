@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b69a3019-41e3-4d53-b916-70065b5fdc4a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputImages/output_canny1.png" beforeDir="false" afterPath="$PROJECT_DIR$/outputImages/example_output_canny1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputImages/output_canny2.png" beforeDir="false" afterPath="$PROJECT_DIR$/outputImages/example_output_canny2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pa1.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/pa1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,11 +15,16 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pa1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+            <state relative-caret-position="136">
+              <caret line="348" column="39" selection-start-line="348" selection-start-column="39" selection-end-line="348" selection-end-column="39" />
               <folding>
                 <element signature="e#332#353#0" expanded="true" />
+                <element signature="e#2955#5080#0" />
+                <element signature="e#3042#3862#0" />
+                <element signature="e#3904#4221#0" />
+                <element signature="e#4249#4369#0" />
                 <element signature="e#3695#4779#0" />
+                <element signature="e#5577#5657#0" />
                 <element signature="e#4941#6400#0" />
                 <element signature="e#6438#7759#0" />
               </folding>
@@ -67,6 +69,7 @@
       <find>size</find>
       <find>sob</find>
       <find>grad</find>
+      <find>&quot;gr</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -84,7 +87,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="4">
-    <option name="x" value="872" />
+    <option name="x" value="65" />
     <option name="y" value="24" />
     <option name="width" value="808" />
     <option name="height" value="906" />
@@ -187,8 +190,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="872" y="24" width="808" height="906" extended-state="4" />
-    <editor active="true" />
+    <frame x="65" y="24" width="808" height="906" extended-state="4" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29171973" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -327,11 +329,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pa1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="74" column="32" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+        <state relative-caret-position="136">
+          <caret line="348" column="39" selection-start-line="348" selection-start-column="39" selection-end-line="348" selection-end-column="39" />
           <folding>
             <element signature="e#332#353#0" expanded="true" />
+            <element signature="e#2955#5080#0" />
+            <element signature="e#3042#3862#0" />
+            <element signature="e#3904#4221#0" />
+            <element signature="e#4249#4369#0" />
             <element signature="e#3695#4779#0" />
+            <element signature="e#5577#5657#0" />
             <element signature="e#4941#6400#0" />
             <element signature="e#6438#7759#0" />
           </folding>
