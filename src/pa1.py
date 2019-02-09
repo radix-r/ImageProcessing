@@ -14,9 +14,9 @@ import sys
 import os
 import statistics
 import numpy as np
-from scipy.stats import multivariate_normal
 import math
-import cv2
+import matplotlib.pyplot as plt
+
 
 
 def main():
@@ -78,7 +78,7 @@ def main():
             # convert image to grey scale
             newImage = gradientCentral(image.convert('L'))
 
-        newImage.save("../outputImages/gradient-{0}-{1}".format(version, file), image.format)
+        newImage.save("../outputImages/gradient-{0}-{1}".format(version, file), newImage.format)
         ''' color stuff
         for band in bands:
 
@@ -98,13 +98,15 @@ def main():
         # canny(image)
 
     elif action == "h":
-        print("Generating histogram on {0}".format(filePath))
-        # histogram(image)
+        print("Generating histogram from {0}".format(filePath))
+        histogram(image.convert("L"),filePath)
         exit(0)
 
     elif action == "s":
         print("Applying Sobel edge detection on {0}".format(filePath))
-        # canny(image)
+        sob = sobelFilter(image.convert("L"))
+        sob['x'].save("../outputImages/sobelFilter-x-{0}".format(file), sob['x'].format)
+        sob['y'].save("../outputImages/sobelFilter-y-{0}".format(file), sob['y'].format)
 
     # actions that need image and size
     else:
@@ -164,7 +166,9 @@ def main():
         newImage.show()
 
 
-
+'''
+This function applies a simple box that sets each pixel to the average of the pixels around it  filter averaging 
+'''
 def boxFilter(image,size):
 
     pixelMap = image.load()
@@ -174,14 +178,14 @@ def boxFilter(image,size):
     delta = (size - 1) // 2  # distance from center pixel to edge of filter
 
     # iterate through each pixel
-    for i in range(newImg.size[0]):
-        for j in range(newImg.size[1]):
+    for x in range(newImg.size[0]):
+        for y in range(newImg.size[1]):
             tempPix = 0
-            k = i - delta
+            k = x - delta
             # apply filter
-            while k <= i + delta:
-                l = j - delta
-                while l <= j + delta:
+            while k <= x + delta:
+                l = y - delta
+                while l <= y + delta:
                     if k < 0 or k >= newImg.size[0] or l < 0 or l >= newImg.size[1]:
                         tempPix += 0
                     else:
@@ -196,9 +200,59 @@ def boxFilter(image,size):
                 k += 1
 
             tempPix = tempPix // (size * size)
-            newPixels[i, j] = tempPix
+            newPixels[x, y] = tempPix
     return newImg
 
+
+'''
+This function applies a 3x3 sobel filter to a given image and returns the result
+
+
+'''
+def sobelFilter(image):
+    kernalX = [[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]]
+
+    kernalY = [[-1, -2, -1],[0, 0, 0],[1, 2, 1]]
+
+
+    delta = 1
+
+    pixelMap = image.load()
+    sobX = Image.new(image.mode, image.size)
+    sobY = Image.new(image.mode, image.size)
+    pixX = sobX.load()
+    pixY = sobY.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    for x in range(width):
+        for y in range(height):
+
+            tempX=0
+            tempY=0
+            # apply filter
+            for i in range(3):
+                filterX = x - i - delta
+
+                for j in range(3):
+                    filterY = y - j - delta
+                    # check if out of bounds
+                    if not(filterX < 0 or filterX >= width or filterY < 0 or filterY >= height):
+                        tempX += kernalX[i][j]*pixelMap[filterX, filterY]
+                        tempY += kernalY[i][j] * pixelMap[filterX, filterY]
+                    filterY += 1
+                filterX += 1
+
+            pixX[x, y] = tempX
+            pixY[x, y] = tempY
+
+    sobX.show()
+    sobY.show()
+    return {'x': sobX, 'y': sobY}
+
+'''
+'''
 def gaussian(sigma, value):
     return (1/(math.sqrt(2*math.pi)*sigma))*math.exp(-(value*value)/(2*sigma*sigma))
 
@@ -362,6 +416,26 @@ def gradientCentral(image):
     return gm
 
 
+'''
+Counts the number of occurrences of each value in an 8 bit grey scale image
+'''
+def histogram(image, name):
+    values = [0]*256
+
+    pixelMap = image.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    for x in range(width):
+        for y in range(height):
+            values[pixelMap[x,y]] += 1
+
+    plt.bar(range(256),values)
+    plt.title("Histogram of Image {0}".format(name))
+    plt.xlabel("Intensity")
+    plt.ylabel("Frequency")
+    plt.show()
 
 def medianFilter(image, size):
     # iterate through each pixel
