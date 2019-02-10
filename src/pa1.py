@@ -16,7 +16,7 @@ import statistics
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-
+import time
 
 
 def main():
@@ -35,6 +35,8 @@ def main():
 
 
 
+    # start timer
+    start = time.time()
 
     # take action according to input
 
@@ -65,18 +67,21 @@ def main():
         if version == "f":
             print("Generating forward gradient on {0}".format(filePath))
             # convert image to grey scale
-            newImage = gradientForward(image.convert('L'))
+            grade = gradient(image.convert('L'), "f")
+            newImage = grade["m"]
 
         elif version == "b":
             print("Generating backward gradient on {0}".format(filePath))
             # convert image to grey scale
-            newImage = gradientBackward(image.convert('L'))
+            grade = gradient(image.convert('L'), "b")
+            newImage = grade["m"]
 
         else: # default to central
             version = "c"
             print("Generating central gradient on {0}".format(filePath))
             # convert image to grey scale
-            newImage = gradientCentral(image.convert('L'))
+            grade = gradient(image.convert('L'), "c")
+            newImage = grade["m"]
 
         newImage.save("../outputImages/gradient-{0}-{1}".format(version, file), newImage.format)
         ''' color stuff
@@ -91,15 +96,23 @@ def main():
         newImage = Image.merge(mode, filteredBands)
         '''
 
-
-
     elif action == "c":
         print("Applying Canny edge detection on {0}".format(filePath))
         # canny(image)
 
+    elif action == "e":
+        print("Applying entropy threshold on {0}".format(filePath))
+        newImage =entropyThreshold(image.convert("L"))
+        newImage.save("../outputImages/entropyThreshold-{0}".format(file), newImage.format)
+
     elif action == "h":
         print("Generating histogram from {0}".format(filePath))
-        histogram(image.convert("L"),filePath)
+        values = histogram(image.convert("L"))
+        plt.bar(range(256), values)
+        plt.title("Histogram of Image {0}".format(filePath))
+        plt.xlabel("Intensity")
+        plt.ylabel("Frequency")
+        plt.show()
         exit(0)
 
     elif action == "s":
@@ -130,7 +143,7 @@ def main():
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/boxFilter{0}{1}".format(size, file), image.format)
 
-        elif action == "ga":
+        elif action.startswith("ga"):
             # get sigma
             if numArgs == 5:
                 try:
@@ -146,7 +159,10 @@ def main():
 
             print("Applying Gaussian filter size {0} with sigma {1} on {2}".format(size, sigma, filePath))
             for band in bands:
-                filteredBands.append(gaussianFilter2D(band, size, sigma))
+                if action.endswith("2"):
+                    filteredBands.append(gaussianFilter2D(band, size, sigma))
+                else:
+                    filteredBands.append(gaussianFilter1D(band, size, sigma))
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/gaussianFilter{0}-{1}{2}".format(size, sigma, file), image.format)
 
@@ -165,6 +181,29 @@ def main():
     if newImage is not None:
         newImage.show()
 
+    end = time.time()
+    print("Operation took {0} seconds".format(end-start))
+
+'''
+applies threshold to grey scale image
+'''
+def applyThreshold(image, threshold):
+    pixelMap = image.load()
+
+    binary = Image.new(image.mode, image.size)
+    binaryPix= binary.load()
+
+    width =image.size[0]
+    height = image.size[1]
+
+    for x in range(width):
+        for y in range(height):
+            if pixelMap[x,y] >= threshold:
+                binaryPix[x,y] = 255
+            else:
+                binaryPix[x,y] = 0
+
+    return binary
 
 '''
 This function applies a simple box that sets each pixel to the average of the pixels around it  filter averaging 
@@ -203,6 +242,70 @@ def boxFilter(image,size):
             newPixels[x, y] = tempPix
     return newImg
 
+''''''
+def cannyEdgeDetection(image):
+    # gaussian
+
+    # gradient
+
+    # non-max
+
+    # hysteresis
+
+    # best sigma for smoothing
+
+    return image
+
+
+
+'''
+This function take in a grey scale image and returns a binary image
+with threshold creating max entropy. only seems effective with simple images
+'''
+def entropyThreshold(image):
+    # get histogram
+    hist = histogram(image)
+
+    total = sum(hist)
+
+    len = hist.__len__()
+
+    indexOfMaxEntropy = 0
+    maxEntropy = 0.0
+
+    pt = 0.0
+    # try each value T
+    for T in range(len):
+        # calculate entropy
+        pt += hist[T]/total
+        if pt == 0:
+            continue
+        a = 0.0
+        b = 0.0
+
+        for i in range(len):
+
+            if hist[i] <= 0:
+                continue
+            if i <= T:
+                pi = hist[i] / (total * pt)
+                a += pi * math.log(pi, 10)
+            else:
+
+                pi = hist[i]/(total*(1-pt))
+
+                b += pi * math.log(pi, 10)
+
+            tempEntropy = math.fabs(a + b)
+            if tempEntropy > maxEntropy:
+                maxEntropy = tempEntropy
+                indexOfMaxEntropy = T
+
+    print("Max entropy at intensity threshold {0}".format(indexOfMaxEntropy))
+
+    binary = applyThreshold(image, indexOfMaxEntropy)
+
+    return binary
 
 '''
 This function applies a 3x3 sobel filter to a given image and returns the result
@@ -256,9 +359,59 @@ def sobelFilter(image):
 def gaussian(sigma, value):
     return (1/(math.sqrt(2*math.pi)*sigma))*math.exp(-(value*value)/(2*sigma*sigma))
 
+'''
+apply gaussian filter to image using 1d method. About 4 times faster than 2d method
+using image3-1.png:
+2d: 21.4 sec
+1d: 5.3 sec
+'''
+def gaussianFilter1D(image,size, sigma):
+    # iterate through each pixel
+    delta = size // 2  # distance from center pixel to edge of filter
+
+    a = np.linspace(0, size, size, endpoint=False)
+    # b = multivariate_normal.pdf(a, mean=0, cov=sigma)
+    for val in range(size):
+        a[val] = gaussian(sigma, val - delta)
+    gaussFilter = a
+    # print(gaussFilter)
+    normalizer = a.sum()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    pixelMap = image.load()
+    yPass = Image.new(image.mode, image.size)
+    yPixles = yPass.load()
+    xPass = Image.new(image.mode, image.size)
+    xPixles = xPass.load()
+
+    # filter y direction
+    for x in range(width):
+        for y in range(height):
+            tempPix = 0.0
+            for index in range(size):
+                offset = y - delta+index
+                if offset >= 0 and offset < height:
+                    tempPix += pixelMap[x,offset]*gaussFilter[index]
+
+            yPixles[x,y]= int (tempPix/normalizer)
+
+    # filter x direction
+    for x in range(width):
+        for y in range(height):
+            tempPix = 0.0
+            for index in range(size):
+                offset = x - delta + index
+                if offset >= 0 and offset < width:
+                    tempPix += yPixles[offset, y] * gaussFilter[index]
+
+            xPixles[x,y] = int(tempPix / normalizer)
+
+    return xPass
 
 '''
-comments ToDo
+Generates a gaussian kernel based on size and sigma. very slow b/c of iteration through image and kernal
 '''
 def gaussianFilter2D(image, size, sigma):
     # iterate through each pixel
@@ -281,8 +434,6 @@ def gaussianFilter2D(image, size, sigma):
     newImg = Image.new(image.mode, image.size)
     newPixels = newImg.load()
 
-
-    #newImg = cv2.filter2D(image,-1,gaussFilter)
 
     for x in range(newImg.size[0]):
         for y in range(newImg.size[1]):
@@ -307,119 +458,87 @@ def gaussianFilter2D(image, size, sigma):
 
     return newImg
 
+'''
+Calculates forward gradient of a single band image using formula: G f(x)=f(x+1)-f(x)
+
+Generates backward gradient using equation: G f(x) = f(x)-f(x-1)
+
+Generates central gradient using equation: G f(x) = f(x+1)-f(x-1)
+'''
+def gradient(image, version):
+    pixelMap = image.load()
+    gx = Image.new(image.mode, image.size)
+    gy = Image.new(image.mode, image.size)
+    gm = Image.new(image.mode, image.size)
+    newPixelsX = gx.load()
+    newPixelsY = gy.load()
+    newPixelsMag = gm.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    angleMatrix = [[0 for x in range(height)] for y in range(width)]
+    print(angleMatrix.__len__())
+    # iterate through each pixel
+    for x in range(width):
+        for y in range(height):
+            gradX = 0
+            gradY = 0
+
+            if version == "f":
+                if x < width - 1:
+                    gradX = pixelMap[x + 1, y] - pixelMap[x, y]
+
+                if y < height - 1:
+                    gradY = pixelMap[x, y + 1] - pixelMap[x, y]
+            elif version == "b":
+                if x > 0:
+                    gradX = pixelMap[x, y] - pixelMap[x - 1, y]
+
+                if y > 0:
+                    gradY = pixelMap[x, y] - pixelMap[x, y - 1]
+            else:
+                if x > 0 and x < (width - 1):
+                    gradX = pixelMap[x + 1, y] - pixelMap[x - 1, y]
+
+                if y > 0 and y < height - 1:
+                    gradY = pixelMap[x, y + 1] - pixelMap[x, y - 1]
+
+            newPixelsX[x, y] = gradX
+            newPixelsY[x, y] = gradY
+            newPixelsMag[x, y] = int(math.sqrt(gradX * gradX + gradY * gradY))
+            if gradX == 0:
+                angleMatrix[x][y] = math.pi/2
+            else:
+                try:
+                    angleMatrix[x][y] = math.atan(gradY/gradX)
+                except IndexError:
+                    print("Out of bounds: {0} {1}".format(x,y))
+                    exit(1)
+    gx.show()
+    gy.show()
+    # gm.show()
+    return {"x": gx, "y": gy, "m": gm, "a": angleMatrix}
 
 '''
 Calculates forward gradient of a single band image using formula: G f(x)=f(x+1)-f(x)
 
 '''
-def gradientForward(image):
-    pixelMap = image.load()
-    gx = Image.new(image.mode, image.size)
-    gy = Image.new(image.mode, image.size)
-    gm = Image.new(image.mode, image.size)
-    newPixelsX = gx.load()
-    newPixelsY = gy.load()
-    newPixelsMag = gm.load()
-
-    width = image.size[0]
-    height = image.size[1]
-
-    # iterate through each pixel
-    for x in range(width):
-        for y in range(height):
-            gradX = 0
-            gradY = 0
-            if x < width-1:
-                gradX = pixelMap[x+1,y]-pixelMap[x,y]
-
-            if y < height -1:
-                gradY = pixelMap[x,y+1]-pixelMap[x,y]
-
-            newPixelsX[x,y] = gradX
-            newPixelsY[x,y] = gradY
-            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
-
-    gx.show()
-    gy.show()
-    #gm.show()
-    return gm
-
 
 '''
 Generates backward gradient using equation: G f(x) = f(x)-f(x-1)
 '''
-def gradientBackward(image):
-    pixelMap = image.load()
-    gx = Image.new(image.mode, image.size)
-    gy = Image.new(image.mode, image.size)
-    gm = Image.new(image.mode, image.size)
-    newPixelsX = gx.load()
-    newPixelsY = gy.load()
-    newPixelsMag = gm.load()
-
-    width = image.size[0]
-    height = image.size[1]
-
-    # iterate through each pixel
-    for x in (range(width)):
-        for y in range(height):
-            gradX = 0
-            gradY = 0
-            if x > 0:
-                gradX = pixelMap[x,y]-pixelMap[x-1,y]
-
-            if y > 0:
-                gradY = pixelMap[x,y]-pixelMap[x,y-1]
-
-            newPixelsX[x,y] = gradX
-            newPixelsY[x,y] = gradY
-            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
-
-    gx.show()
-    gy.show()
-    #gm.show()
-    return gm
 
 '''
 Generates central gradient using equation: G f(x) = f(x+1)-f(x-1)
 '''
-def gradientCentral(image):
-    pixelMap = image.load()
-    gx = Image.new(image.mode, image.size)
-    gy = Image.new(image.mode, image.size)
-    gm = Image.new(image.mode, image.size)
-    newPixelsX = gx.load()
-    newPixelsY = gy.load()
-    newPixelsMag = gm.load()
-
-    width = image.size[0]
-    height = image.size[1]
-
-    # iterate through each pixel
-    for x in range(width):
-        for y in range(height):
-            gradX = 0
-            gradY = 0
-            if x > 0 and x < (width -1):
-                gradX = pixelMap[x+1,y]-pixelMap[x-1,y]
-
-            if y > 0 and y < height -1:
-                gradY = pixelMap[x,y+1]-pixelMap[x,y-1]
-
-            newPixelsX[x,y] = gradX
-            newPixelsY[x,y] = gradY
-            newPixelsMag[x,y] = int(math.sqrt(gradX*gradX + gradY*gradY))
-
-    gx.show()
-    gy.show()
-    #gm.show()
-    return gm
 
 
 '''
 Counts the number of occurrences of each value in an 8 bit grey scale image
+retruns a list size 256 where each intensity(index) is assigned its frequency 
 '''
-def histogram(image, name):
+def histogram(image):
     values = [0]*256
 
     pixelMap = image.load()
@@ -431,12 +550,12 @@ def histogram(image, name):
         for y in range(height):
             values[pixelMap[x,y]] += 1
 
-    plt.bar(range(256),values)
-    plt.title("Histogram of Image {0}".format(name))
-    plt.xlabel("Intensity")
-    plt.ylabel("Frequency")
-    plt.show()
 
+
+    return values
+
+'''
+'''
 def medianFilter(image, size):
     # iterate through each pixel
     delta = (size - 1) // 2  # distance from center pixel to edge of filter
@@ -482,8 +601,12 @@ def printHelp():
     print("\t-c\t apply Canny edge detection.")
 
     print("\t-ga\t apply Gaussian filter. Size input needed. Sigma input needed")
-    print("\t-gr\t get gradient.")
-    print("\t-h\t generate a histogram of the image's color frequency.")
+    print("\t-ga2\t apply Gaussian filter using slower 2d method. Size input needed. Sigma input needed")
+
+    print("\t-gr\t get gradient. Defaults to centralized method")
+    print("\t-grb\t get gradient using backward method")
+    print("\t-grf\t get gradient using forward method ")
+    print("\t-h\t generate a histogram of the image's intensity and frequency.")
 
     print("\t-help\t print help.")
 
@@ -492,13 +615,11 @@ def printHelp():
 
 
 def sum2DMatrix(matrix):
-    sum = 0.0
+    total = 0.0
     for row in matrix:
         for elem in row:
-            sum += elem
-    return sum
-
-
+            total += elem
+    return total
 
 
 if __name__ == "__main__":
