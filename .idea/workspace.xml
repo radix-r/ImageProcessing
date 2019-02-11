@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b69a3019-41e3-4d53-b916-70065b5fdc4a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputImages/gaussianFilter5-5.0image1.png" beforeDir="false" afterPath="$PROJECT_DIR$/outputImages/gaussianFilter5-5.0image1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pa1.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/pa1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,36 +15,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pa1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="89" column="48" selection-start-line="89" selection-start-column="33" selection-end-line="89" selection-end-column="48" />
+            <state relative-caret-position="108">
+              <caret line="118" column="86" selection-start-line="118" selection-start-column="86" selection-end-line="118" selection-end-column="86" />
               <folding>
                 <element signature="e#332#353#0" expanded="true" />
+                <element signature="e#1393#2597#0" />
                 <element signature="e#2588#2706#0" />
                 <element signature="e#2740#3026#0" />
-                <element signature="e#3085#5364#0" />
+                <element signature="e#3532#3840#0" />
+                <element signature="e#3892#4857#0" />
+                <element signature="e#4899#5216#0" />
                 <element signature="e#5905#6270#0" />
                 <element signature="e#5655#6739#0" />
+                <element signature="e#7850#8150#0" />
                 <element signature="e#7690#8659#0" />
-                <element signature="e#6861#7953#0" />
                 <element signature="e#7995#8075#0" />
                 <element signature="e#8259#9587#0" />
                 <element signature="e#9748#11226#0" />
                 <element signature="e#13428#14918#0" />
+                <element signature="e#14265#14642#0" />
+                <element signature="e#15115#16202#0" />
                 <element signature="e#14499#15820#0" />
+                <element signature="e#16392#17507#0" />
+                <element signature="e#17495#18587#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/outputImages/example_output_canny1.png">
+          <provider selected="true" editor-type-id="images" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor>
-                <caret column="61" selection-start-column="61" selection-end-column="61" />
+              <first_editor relative-caret-position="61">
+                <caret line="11" selection-start-line="11" selection-end-line="11" />
               </first_editor>
               <second_editor />
             </state>
@@ -70,6 +84,11 @@
       <find>entropyThreshold</find>
       <find>gradient</find>
       <find>gradientForward</find>
+      <find>nonMax</find>
+      <find>cann</find>
+      <find>hysteresis</find>
+      <find>cannyEdgeDetection</find>
+      <find>lter size</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -81,16 +100,16 @@
         <option value="$PROJECT_DIR$/src/medianFiltering.py" />
         <option value="$PROJECT_DIR$/src/medianFilter.py" />
         <option value="$PROJECT_DIR$/src/boxFilter.py" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/pa1.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
-    <option name="x" value="872" />
-    <option name="y" value="24" />
-    <option name="width" value="808" />
-    <option name="height" value="906" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="65" />
+    <option name="y" value="-4" />
+    <option name="width" value="1615" />
+    <option name="height" value="934" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -148,7 +167,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.gradient">
+  <component name="RunManager" selected="Python.hys">
     <configuration name="gaussFilter" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="PA1" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -184,6 +203,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/pa1.py" />
       <option name="PARAMETERS" value="-grc ../inputImages/image3-1.png" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="hys" type="PythonConfigurationType" factoryName="Python">
+      <module name="PA1" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/.virtualenvs/roboV/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/pa1.py" />
+      <option name="PARAMETERS" value="-c ../inputImages/canny1.jpg 5 5" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -237,6 +277,7 @@
       <item itemvalue="Python.sobel" />
       <item itemvalue="Python.threshold" />
       <item itemvalue="Python.gradient" />
+      <item itemvalue="Python.hys" />
       <item itemvalue="Python.gaussFilter" />
     </list>
     <recent_temporary>
@@ -268,10 +309,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="872" y="24" width="808" height="906" extended-state="4" />
+    <frame x="65" y="-4" width="1615" height="934" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29044586" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14321607" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -282,7 +323,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32991013" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32862645" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.54557127" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.5266419" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32991013" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -387,16 +428,6 @@
     <entry file="file://$PROJECT_DIR$/inputImages/image3-1.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor>
-            <caret column="61" selection-start-column="61" selection-end-column="61" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/inputImages/image1.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -406,25 +437,45 @@
     <entry file="file://$PROJECT_DIR$/inputImages/image4.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/outputImages/example_output_canny1.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/pa1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="89" column="48" selection-start-line="89" selection-start-column="33" selection-end-line="89" selection-end-column="48" />
+        <state relative-caret-position="108">
+          <caret line="118" column="86" selection-start-line="118" selection-start-column="86" selection-end-line="118" selection-end-column="86" />
           <folding>
             <element signature="e#332#353#0" expanded="true" />
+            <element signature="e#1393#2597#0" />
             <element signature="e#2588#2706#0" />
             <element signature="e#2740#3026#0" />
-            <element signature="e#3085#5364#0" />
+            <element signature="e#3532#3840#0" />
+            <element signature="e#3892#4857#0" />
+            <element signature="e#4899#5216#0" />
             <element signature="e#5905#6270#0" />
             <element signature="e#5655#6739#0" />
+            <element signature="e#7850#8150#0" />
             <element signature="e#7690#8659#0" />
-            <element signature="e#6861#7953#0" />
             <element signature="e#7995#8075#0" />
             <element signature="e#8259#9587#0" />
             <element signature="e#9748#11226#0" />
             <element signature="e#13428#14918#0" />
+            <element signature="e#14265#14642#0" />
+            <element signature="e#15115#16202#0" />
             <element signature="e#14499#15820#0" />
+            <element signature="e#16392#17507#0" />
+            <element signature="e#17495#18587#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="61">
+            <caret line="11" selection-start-line="11" selection-end-line="11" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

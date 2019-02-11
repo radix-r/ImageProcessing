@@ -63,6 +63,7 @@ def main():
     if action.startswith("gr"):
 
         version = action[-1:]
+        grade = None
 
         if version == "f":
             print("Generating forward gradient on {0}".format(filePath))
@@ -83,6 +84,8 @@ def main():
             grade = gradient(image.convert('L'), "c")
             newImage = grade["m"]
 
+        grade["x"].show()
+        grade["y"].show()
         newImage.save("../outputImages/gradient-{0}-{1}".format(version, file), newImage.format)
         ''' color stuff
         for band in bands:
@@ -97,8 +100,24 @@ def main():
         '''
 
     elif action == "c":
+        # get low and high values from cmd line
+        if numArgs == 5:
+            try:
+                high = int(sys.argv[3])
+                low = int(sys.argv[4])
+            except ValueError:
+                print("High/Low input must be a base 10 int")
+                print("For help: python3 pa1.py -help")
+                exit(1)
+        else:
+            print("High/low argument needed")
+            print("For help: python3 pa1.py -help")
+            exit(1)
+
         print("Applying Canny edge detection on {0}".format(filePath))
-        # canny(image)
+        newImage = cannyEdgeDetection(image.convert("L"), high, low)
+        newImage.save("../outputImages/cannyEdgeDetection{0}-{1}-{2}".format(high,low,file), newImage.format)
+
 
     elif action == "e":
         print("Applying entropy threshold on {0}".format(filePath))
@@ -142,6 +161,8 @@ def main():
                 filteredBands.append(boxFilter(band, size))
             newImage = Image.merge(mode, filteredBands)
             newImage.save("../outputImages/boxFilter{0}{1}".format(size, file), image.format)
+
+
 
         elif action.startswith("ga"):
             # get sigma
@@ -242,19 +263,25 @@ def boxFilter(image,size):
             newPixels[x, y] = tempPix
     return newImg
 
-''''''
-def cannyEdgeDetection(image):
+'''
+uses gaussian of size 5 with sigma 1
+'''
+def cannyEdgeDetection(image, high, low):
     # gaussian
+    gauss = gaussianFilter1D(image,5,1)
 
     # gradient
+    grad = gradient(gauss, "c")
 
     # non-max
+    nMax = nonMax(grad["m"], grad["a"])
 
     # hysteresis
 
+    hys = hysteresis(nMax, high, low)
     # best sigma for smoothing
 
-    return image
+    return hys
 
 
 
@@ -307,52 +334,6 @@ def entropyThreshold(image):
 
     return binary
 
-'''
-This function applies a 3x3 sobel filter to a given image and returns the result
-
-
-'''
-def sobelFilter(image):
-    kernalX = [[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]]
-
-    kernalY = [[-1, -2, -1],[0, 0, 0],[1, 2, 1]]
-
-
-    delta = 1
-
-    pixelMap = image.load()
-    sobX = Image.new(image.mode, image.size)
-    sobY = Image.new(image.mode, image.size)
-    pixX = sobX.load()
-    pixY = sobY.load()
-
-    width = image.size[0]
-    height = image.size[1]
-
-    for x in range(width):
-        for y in range(height):
-
-            tempX=0
-            tempY=0
-            # apply filter
-            for i in range(3):
-                filterX = x - i - delta
-
-                for j in range(3):
-                    filterY = y - j - delta
-                    # check if out of bounds
-                    if not(filterX < 0 or filterX >= width or filterY < 0 or filterY >= height):
-                        tempX += kernalX[i][j]*pixelMap[filterX, filterY]
-                        tempY += kernalY[i][j] * pixelMap[filterX, filterY]
-                    filterY += 1
-                filterX += 1
-
-            pixX[x, y] = tempX
-            pixY[x, y] = tempY
-
-    sobX.show()
-    sobY.show()
-    return {'x': sobX, 'y': sobY}
 
 '''
 '''
@@ -410,6 +391,7 @@ def gaussianFilter1D(image,size, sigma):
 
     return xPass
 
+
 '''
 Generates a gaussian kernel based on size and sigma. very slow b/c of iteration through image and kernal
 '''
@@ -458,6 +440,7 @@ def gaussianFilter2D(image, size, sigma):
 
     return newImg
 
+
 '''
 Calculates forward gradient of a single band image using formula: G f(x)=f(x+1)-f(x)
 
@@ -478,7 +461,7 @@ def gradient(image, version):
     height = image.size[1]
 
     angleMatrix = [[0 for x in range(height)] for y in range(width)]
-    print(angleMatrix.__len__())
+
     # iterate through each pixel
     for x in range(width):
         for y in range(height):
@@ -508,30 +491,19 @@ def gradient(image, version):
             newPixelsY[x, y] = gradY
             newPixelsMag[x, y] = int(math.sqrt(gradX * gradX + gradY * gradY))
             if gradX == 0:
-                angleMatrix[x][y] = math.pi/2
+                if gradY ==0:
+                    angleMatrix[x][y]=0
+                else:
+                    angleMatrix[x][y] = gradY/math.fabs(gradY) * math.pi/2
             else:
                 try:
                     angleMatrix[x][y] = math.atan(gradY/gradX)
                 except IndexError:
                     print("Out of bounds: {0} {1}".format(x,y))
                     exit(1)
-    gx.show()
-    gy.show()
+
     # gm.show()
     return {"x": gx, "y": gy, "m": gm, "a": angleMatrix}
-
-'''
-Calculates forward gradient of a single band image using formula: G f(x)=f(x+1)-f(x)
-
-'''
-
-'''
-Generates backward gradient using equation: G f(x) = f(x)-f(x-1)
-'''
-
-'''
-Generates central gradient using equation: G f(x) = f(x+1)-f(x-1)
-'''
 
 
 '''
@@ -554,6 +526,43 @@ def histogram(image):
 
     return values
 
+
+def hysteresis(image, high,low):
+    inPixles = image.load()
+
+    out = Image.new("1", image.size)
+    outPixles = out.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    for x in range(width):
+        for y in range(height):
+            # check if passes high pass
+            if inPixles[x,y] >= high:
+                outPixles[x,y] = 1
+            elif inPixles[x,y] < low:
+                outPixles[x,y] = 0
+            else:
+                # check neighboring pixels, look for at least 2 above low
+                passCount = 0
+                examineX = x-1
+                for checkX in range(3):
+                    examineY = y-1
+                    for checkY in range(3):
+                        # check that we are in range
+                        if examineX < width and examineX >= 0 and examineY < height and examineY >= 0:
+                            if inPixles[examineX,examineY] > low:
+                                passCount += 1
+
+                        examineY += 1
+
+                    examineX += 1
+
+                if passCount > 1:
+                    outPixles[x, y] = 1
+
+    return out
 '''
 '''
 def medianFilter(image, size):
@@ -592,13 +601,55 @@ def medianFilter(image, size):
             newPixels[x, y] = statistics.median(tempPixels)
     return newImg
 
+
+''''''
+def nonMax(grad, angles):
+    width = grad.size[0]
+    height = grad.size[1]
+
+    normalizer = 1/math.sqrt(2)
+
+    gradPixles = grad.load()
+    filtered = Image.new(grad.mode, grad.size)
+    filteredPixels = filtered.load()
+
+    for x in range(width):
+        for y in range(height):
+            xDir = math.cos(angles[x][y])/normalizer
+            yDir = math.sin(angles[x][y])/normalizer
+
+            xDir = round(xDir, 0)
+            yDir = round(yDir, 0)
+
+            keep = True
+            # check positive direction
+            examineX = x+xDir
+            examineY = y+yDir
+
+            # Make sure in bounds
+            for i in range(2):
+                if  examineX < width and examineX >= 0 and examineY < width and examineY >=0:
+                    if gradPixles[examineX,examineY] > gradPixles[x,y]:
+                        keep = False
+
+                examineX = x - xDir
+                examineY = y - yDir
+
+            if keep:
+                filteredPixels[x,y] = gradPixles[x,y]
+            else:
+                filteredPixels[x, y] = 0
+
+    return filtered
+
 def printHelp():
     print("Usage: python3 pa1.py -<action> <path to image> [<size of filter. An odd number>] [<sigma for Gauss>]")
     print("Example: python3 pa1.py -m ../inputImages/image1.png  5")
     print("Apply image processing algorithms to apply filters, generate histograms, or apply Canny edge detection.\n")
     print("Potential mandatory arguments:")
     print("\t-b\t apply box filter. Size input needed.")
-    print("\t-c\t apply Canny edge detection.")
+    print("\t-c\t apply Canny edge detection. Take high and low inputs")
+    print("\t-e\t apply max entropy threshold.")
 
     print("\t-ga\t apply Gaussian filter. Size input needed. Sigma input needed")
     print("\t-ga2\t apply Gaussian filter using slower 2d method. Size input needed. Sigma input needed")
@@ -612,6 +663,54 @@ def printHelp():
 
     print("\t-m\t apply median filter. Size input needed.")
     print("\t-s\t apply 3x3 Sobel filter.")
+
+
+'''
+This function applies a 3x3 sobel filter to a given image and returns the result
+
+
+'''
+def sobelFilter(image):
+    kernalX = [[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]]
+
+    kernalY = [[-1, -2, -1],[0, 0, 0],[1, 2, 1]]
+
+
+    delta = 1
+
+    pixelMap = image.load()
+    sobX = Image.new(image.mode, image.size)
+    sobY = Image.new(image.mode, image.size)
+    pixX = sobX.load()
+    pixY = sobY.load()
+
+    width = image.size[0]
+    height = image.size[1]
+
+    for x in range(width):
+        for y in range(height):
+
+            tempX=0
+            tempY=0
+            # apply filter
+            for i in range(3):
+                filterX = x - i - delta
+
+                for j in range(3):
+                    filterY = y - j - delta
+                    # check if out of bounds
+                    if not(filterX < 0 or filterX >= width or filterY < 0 or filterY >= height):
+                        tempX += kernalX[i][j]*pixelMap[filterX, filterY]
+                        tempY += kernalY[i][j] * pixelMap[filterX, filterY]
+                    filterY += 1
+                filterX += 1
+
+            pixX[x, y] = tempX
+            pixY[x, y] = tempY
+
+    sobX.show()
+    sobY.show()
+    return {'x': sobX, 'y': sobY}
 
 
 def sum2DMatrix(matrix):
