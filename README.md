@@ -82,10 +82,14 @@ using image3-1.png:
 1d: 5.3 sec
 
 # Histogram
-it in here. use -h
+it's in here. use -h
 
 # Can we use Entropy for thresholding?
 yup. use -e
+### original
+![](./inputImages/image4.png)
+### after thresholding
+![](./outputImages/entropyThreshold-image4.png)
 
 # Canny Edge Detection
 ### originals
